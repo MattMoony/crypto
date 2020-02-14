@@ -4,7 +4,7 @@ from string import ascii_lowercase
 class CaesarCipher(object):
     def __init__(self, shift, d=ascii_lowercase):
         self.shift = shift
-        self.d = ascii_lowercase
+        self.d = d if d else ascii_lowercase
 
     def __shift(self, c):
         if c in self.d.lower():
@@ -42,8 +42,20 @@ class CaesarCipher(object):
         return matches
 
 def main():
+    print('''
+........................................................................................................
+..%%%%....%%%%...%%%%%%...%%%%....%%%%...%%%%%............%%%%...%%%%%%..%%%%%...%%..%%..%%%%%%..%%%%%..
+.%%..%%..%%..%%..%%......%%......%%..%%..%%..%%..........%%..%%....%%....%%..%%..%%..%%..%%......%%..%%.
+.%%......%%%%%%..%%%%.....%%%%...%%%%%%..%%%%%...........%%........%%....%%%%%...%%%%%%..%%%%....%%%%%..
+.%%..%%..%%..%%..%%..........%%..%%..%%..%%..%%..........%%..%%....%%....%%......%%..%%..%%......%%..%%.
+..%%%%...%%..%%..%%%%%%...%%%%...%%..%%..%%..%%...........%%%%...%%%%%%..%%......%%..%%..%%%%%%..%%..%%.
+........................................................................................................
+    ''')
+
     import os
     from argparse import ArgumentParser
+    import colorama as clr
+    clr.init()
     parser = ArgumentParser('Caesar Cipher')
 
     parser.add_argument('-d', action='store_true', dest='dec', help='[flag] decrypt')
@@ -58,20 +70,23 @@ def main():
     args = parser.parse_args()
 
     if not (bool(args.dec) ^ bool(args.enc) ^ bool(args.pwn)):
-        print('[-] Invalid parameters: Please provide either `dec`, `enc` or `pwn` flag!')
+        print(clr.Fore.RED + '[-] Invalid parameters: Please provide either `dec`, `enc` or `pwn` flag!' + clr.Fore.RESET)
         os._exit(1)
 
     cipher = CaesarCipher(args.shift, args.alphabet)
     if args.dec or args.enc:
         res = cipher.enc(args.msg) if args.enc else cipher.dec(args.msg)
-        print('[+] {} mesage: {}'.format('Encrypted' if args.enc else 'Decrypted', res))
+        print('[+] {} mesage: {}{}'.format('Encrypted' if args.enc else 'Decrypted', clr.Fore.GREEN, res))
     else:
         if not args.keywords and not args.lang:
-            print('[-] Invalid parameters: Missing `keywords` / `lang`!')
+            print(clr.Fore.RED + '[-] Invalid parameters: Missing `keywords` / `lang`!' + clr.Fore.RESET)
             os._exit(1)
         matches = cipher.pwn(args.msg, args.keywords.split(',') if args.keywords else None, args.lang)
         print('[+] Pwn result: ')
-        print('\n'.join([ ' |- {:02d} --> {}'.format(m[0], m[1]) for m in matches ]))
+        print('\n'.join([ ' |- {}{:02d}{} --> {}{}'.format(clr.Fore.LIGHTBLACK_EX, m[0], clr.Fore.RESET, clr.Fore.LIGHTBLUE_EX, m[1]) 
+                + clr.Fore.RESET for m in matches ]))
+
+    print()
 
 if __name__ == '__main__':
     main()

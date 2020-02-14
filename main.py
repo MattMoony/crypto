@@ -3,7 +3,7 @@ import re
 
 def list_algorithms():
     bp = os.path.dirname(os.path.realpath(__file__))
-    return [ {'name': x, 'complete': False if not os.path.isfile(os.path.join(bp, x, 'complete')) else bool(open(os.path.join(bp, x, 'complete')).read())} for x in os.listdir(bp) if os.path.isdir(os.path.join(bp, x)) and not re.match(r'^[\._].*$', x) ]
+    return [ {'name': x, 'complete': False if not os.path.isfile(os.path.join(bp, x, 'complete')) else bool(int(open(os.path.join(bp, x, 'complete')).read()))} for x in os.listdir(bp) if os.path.isdir(os.path.join(bp, x)) and not re.match(r'^[\._].*$', x) ]
 
 def main():
     print('''
